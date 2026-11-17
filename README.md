@@ -18,7 +18,7 @@ Setiap commit di `main` akan menjalankan workflow GitHub Pages.
 - Registrasi Kanker: identitas, episode, diagnosis, stadium/TNM, penunjang, terapi, tindak lanjut, dan pengajuan. Tahap pemeriksaan mengarah ke QC yang interaktif.
 - Pemeriksaan Kelengkapan: status perbaikan/konfirmasi dalam bahasa pengguna, dengan kode aturan yang bisa dibuka jika diperlukan.
 - Antrean Review: simulasi keputusan verifikator fasyankes, daerah, dan nasional.
-- Pelaporan: demonstrasi cohort, snapshot, dan export CSV data sintetis.
+- Pelaporan: rekap kasus final sesuai cakupan peran dan ekspor CSV data sintetis.
 - Integrasi & Audit: status sistem contoh dan aktivitas sesi; hanya tersedia melalui panel presenter.
 - Konfigurasi: master organisasi, role, routing, dan kebijakan verifikasi internal; hanya tersedia melalui panel presenter.
 
