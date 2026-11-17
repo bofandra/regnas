@@ -14,27 +14,32 @@ Setiap commit di `main` akan menjalankan workflow GitHub Pages.
 
 - Ringkasan/dashboard: indikator operasional simulasi dan alur fasyankes → daerah → nasional.
 - Daftar Kasus: pencarian serta perpindahan antar-kasus tumor primer.
-- Generate URL: demonstrasi konteks launch Organization, Practitioner, Patient, Encounter, EpisodeOfCare, Composition.
+- Generate URL: konteks launch Organization, Practitioner, Patient, Encounter, EpisodeOfCare, Composition, dan tautan demo yang membuka kasus terpilih.
 - Form Registrasi: tab F04–F12 berisi identitas, episode, diagnosis, staging, penunjang, terapi, follow-up, QC dan submit.
-- Quality Check: warning terstruktur dengan alasan acknowledgement.
+- Quality Check: pemeriksaan sederhana per kasus/revisi, blocking dan warning dengan acknowledgement.
 - Antrean Review: simulasi keputusan verifikator fasyankes, daerah, dan nasional.
 - Pelaporan: demonstrasi cohort, snapshot, dan export CSV data sintetis.
 - Integrasi & Audit: status sistem mock serta aktivitas dalam sesi browser.
 - Konfigurasi: master organisasi, role, routing, dan kebijakan verifikasi internal F12B.
 
-## Cara menguji
+## Cara menguji — skenario demo end-to-end
 
 1. Pilih **Registrar Fasyankes** pada dropdown kanan atas.
-2. Buka **Generate URL**, klik **Generate URL demo**.
-3. Buka **Daftar Kasus**, pilih salah satu kasus lalu tinjau **Form Registrasi**.
-4. Buka **Quality Check**, tulis alasan warning dan klik **Akui warning demo**.
-5. Pilih kasus dalam **Form Registrasi → F12 Submit** lalu klik Submit bila sesuai.
-6. Ubah peran ke **Reviewer Daerah** atau **Reviewer Nasional**, buka **Antrean Review** dan lakukan simulasi persetujuan atau return.
-7. **Pelaporan** dapat mengekspor CSV sintetis dari kasus yang berstatus FINAL_LOCKED.
+2. Buka **Generate URL**, pilih kasus sintetis **REG-2026-00130**, klik **Generate URL demo** lalu **Buka kasus dari URL**. URL juga bisa disalin dan dibuka di tab baru.
+3. Tinjau **Form Registrasi**. Identitas, diagnosis, stadium dan referensi FHIR sintetis kini mengikuti kasus yang dipilih. Field sumber tampil read-only; field abstraksi dapat diubah selama tahap koreksi/draf.
+4. Pada **F07 Stadium/TNM**, kasus 00130 sengaja memiliki **TX** dan edisi staging **Belum dipastikan**. Ubah T menjadi **T2** dan pilih **Edisi ditetapkan pengampu**. Ini hanya latihan input, **bukan validasi klinis otomatis**.
+5. Buka **Quality Check**, klik **Jalankan QC demo**. Jika masih ada warning, isikan alasan dan klik **Akui warning**. QC dan acknowledgement melekat pada kasus dan revisi yang sama; pengubahan field mewajibkan QC ulang.
+6. Buka **Form Registrasi → F12 Submit**, lalu klik **Ajukan ke Verifikator RS**. Kasus 00130 disetel dengan kebijakan simulasi `REQUIRED`, sehingga tidak dapat langsung melewati F12B.
+7. Ubah role menjadi **Verifikator RS**, buka **Antrean Review**, klik **Pilih** untuk kasus tersebut lalu **Setujui sesuai peran**. Status berpindah ke `REGIONAL_REVIEW`.
+8. Ubah role ke **Reviewer Daerah** lalu **Reviewer Nasional** secara berurutan. Pada masing-masing antrean, pilih kasus dan setujui. Status akhirnya menjadi `FINAL_LOCKED`.
+9. Buka **Ringkasan** untuk melihat indikator kasus final, lalu **Pelaporan** untuk mengekspor CSV sintetis dari kasus final.
+10. Klik **Reset Demo** pada toolbar untuk mengembalikan seluruh status, field, revisi, acknowledgement QC, dan audit sesi ke kondisi awal.
+
+Skenario alternatif: pada F12B atau review daerah/nasional gunakan **Kembalikan untuk koreksi**, kemudian perbaiki kasus sebagai registrar dan ulangi QC/submit. Kasus yang sudah `FINAL_LOCKED` tidak bisa di-return lewat simulasi biasa.
 
 ## Keamanan dan batasan
 
-**Seluruh data sintetis.** Tidak ada backend, penyimpanan server, SSO, API SATUSEHAT, maupun integrasi SIMRS nyata. Role-switch, QC, validasi, keputusan reviewer, dan audit adalah interaksi sisi browser saja; **tidak dapat digunakan untuk mengelola data pasien nyata**. GitHub Pages bersifat publik—jangan menaruh token, NIK, secret, atau informasi rekam medis di repository ini.
+**Seluruh data sintetis.** Tidak ada backend, penyimpanan server, SSO, API SATUSEHAT, maupun integrasi SIMRS nyata. Role-switch, penyimpanan draf, QC, validasi, keputusan reviewer, dan audit adalah interaksi sisi browser saja; **tidak dapat digunakan untuk mengelola data pasien nyata**. GitHub Pages bersifat publik—jangan menaruh token, NIK, secret, atau informasi rekam medis di repository ini.
 
 Simulasi tidak berarti kriteria registrable case, multiple primary, coding ICD-O, persetujuan verifikator, ekspor CanReg5 atau mekanisme IARC telah disahkan. Perilaku produksi memerlukan Registry API, FHIR Adapter, RBAC, audit immutable, SOP klinis, kebijakan data, dan verifikasi lingkungan SATUSEHAT.
 
