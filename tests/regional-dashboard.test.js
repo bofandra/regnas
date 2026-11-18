@@ -201,10 +201,10 @@ test("T15 — stage bucket recognizes IIB as II and unknown separately",()=>{
 function sampleCases(x) {
   const ids=x.view.state().cards.map(c=>c.id);
   return x.regional.extendCases([
-    {id:"REG-2026-00127",patient:"P-000127",org:"RS Contoh Sejahtera",region:"DKI Jakarta",tumor:"Kanker payudara",topo:"C50.9",primary:"TUM-001",date:"2026-07-15",status:"REGIONAL_REVIEW"},
-    {id:"REG-2026-00128",patient:"P-000128",org:"RS Contoh Bahari",region:"Jawa Barat",tumor:"Kanker kolorektal",topo:"C18.9",primary:"TUM-002",date:"2026-05-27",status:"RETURNED_TO_FASKES"},
-    {id:"REG-2026-00129",patient:"P-000129",org:"RS Contoh Nusantara",region:"Jawa Tengah",tumor:"Kanker paru",topo:"C34.9",primary:"TUM-003",date:"2026-08-09",status:"NATIONAL_REVIEW"},
-    {id:"REG-2026-00130",patient:"P-000130",org:"RS Contoh Mandiri",region:"Jawa Timur",tumor:"Kanker serviks",topo:"C53.9",primary:"TUM-004",date:"2026-10-10",status:"DRAFT"},
-    {id:"REG-2026-00131",patient:"P-000131",org:"RS Contoh Sentosa",region:"DKI Jakarta",tumor:"Limfoma",topo:"C77.9",primary:"TUM-005",date:"2026-06-30",status:"FINAL_LOCKED"}
+    {id:"REG-2026-00127",patient:"P-000127",org:"RS Contoh Sejahtera",region:"DKI Jakarta",tumor:"Kanker payudara",topo:"C50.9",primary:"TUM-001",stage:"IIA",date:"2026-07-15",status:"REGIONAL_REVIEW"},
+    {id:"REG-2026-00128",patient:"P-000128",org:"RS Contoh Bahari",region:"Jawa Barat",tumor:"Kanker kolorektal",topo:"C18.9",primary:"TUM-002",stage:"III",date:"2026-05-27",status:"RETURNED_TO_FASKES"},
+    {id:"REG-2026-00129",patient:"P-000129",org:"RS Contoh Nusantara",region:"Jawa Tengah",tumor:"Kanker paru",topo:"C34.9",primary:"TUM-003",stage:"IV",date:"2026-08-09",status:"NATIONAL_REVIEW"},
+    {id:"REG-2026-00130",patient:"P-000130",org:"RS Contoh Mandiri",region:"Jawa Timur",tumor:"Kanker serviks",topo:"C53.9",primary:"TUM-004",stage:"IIB",date:"2026-10-10",status:"DRAFT"},
+    {id:"REG-2026-00131",patient:"P-000131",org:"RS Contoh Sentosa",region:"DKI Jakarta",tumor:"Limfoma",topo:"C77.9",primary:"TUM-005",stage:"UNKNOWN",date:"2026-06-30",status:"FINAL_LOCKED"}
   ]);
 }
