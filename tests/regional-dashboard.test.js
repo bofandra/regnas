@@ -38,7 +38,7 @@ function boot(initialHash) {
   assert.ok(match,"inline mockup script exists");
   const hook = [
     "window.__test={",
-    "state:function(){return {role:role,page:page,count:cards.length,status:selected.status,id:selected.id,nav:el('nav').innerHTML,view:el('view').innerHTML,scope:scopedCases().map(function(c){return c.id}),cards:cards.map(function(c){return {id:c.id,status:c.status}})}},",
+    "state:function(){return {role:role,page:page,count:cards.length,status:selected.status,id:selected.id,nav:el('nav').innerHTML,view:el('view').innerHTML,scope:scopedCases().map(function(c){return c.id}),cards:cards.map(function(c){return {id:c.id,status:c.status,submittedAt:c.submittedAt,finalAt:c.finalAt}})}},",
     "act:act,",
     "role:function(r){role=r;page='dashboard';render()},",
     "page:function(p){page=p;render()},",
@@ -197,6 +197,30 @@ test("T15 — stage bucket recognizes IIB as II and unknown separately",()=>{
   assert.ok(r.filterCases(records,"nasional","").some(c=>c.stage==="IIB"));
   r.setFilter("stage","UNKNOWN");
   assert.ok(r.filterCases(records,"nasional","").every(c=>c.stage==="UNKNOWN"));
+});
+test("T16 — submission/finalization dates follow demo workflow and filter",()=>{
+  const x=boot(),r=x.regional;
+  x.view.act("presenterlaunch");x.view.act("generate");x.view.act("openlaunch");
+  let c=x.view.state().cards.find(c=>c.id==="REG-2026-00130");
+  assert.equal(c.submittedAt,null);
+  assert.equal(c.finalAt,null);
+  x.view.edit(3,2,"T2");x.view.edit(3,1,"Edisi ditetapkan pengampu");
+  x.view.act("runqc");x.view.act("submit");
+  c=x.view.state().cards.find(c=>c.id==="REG-2026-00130");
+  assert.equal(c.submittedAt,"2026-11-18");
+  assert.equal(c.finalAt,null);
+  x.view.role("verifikator");x.view.act("approve");
+  x.view.role("daerah");x.view.act("approve");
+  x.view.role("nasional");x.view.act("approve");
+  c=x.view.state().cards.find(c=>c.id==="REG-2026-00130");
+  assert.equal(c.finalAt,"2026-11-18");
+  r.setFilter("basis","finalization");
+  r.setFilter("year","2026");
+  assert.ok(x.view.state().cards.filter(c=>c.id==="REG-2026-00130").every(c=>!!c.finalAt));
+  x.view.act("reset");
+  c=x.view.state().cards.find(c=>c.id==="REG-2026-00130");
+  assert.equal(c.submittedAt,null);
+  assert.equal(c.finalAt,null);
 });
 function sampleCases(x) {
   const ids=x.view.state().cards.map(c=>c.id);
