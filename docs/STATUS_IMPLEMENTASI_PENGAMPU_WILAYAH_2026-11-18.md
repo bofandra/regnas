@@ -23,8 +23,9 @@
 - **index.html** — persona Pengampu Wilayah, navigasi baru, direct link dengan fragment pengampu, panel presenter dan perlindungan akses UI mockup.
 - **assets/js/regional-dashboard.js** — jejaring/faskes/data sintetis, filter dan agregasi, SVG wilayah ilustratif, interaksi peta/chart, monitoring, ekspor agregat.
 - **assets/css/regional-dashboard.css** — style dashboard, map, chart, tabel, drill-down, responsive.
-- **tests/regional-dashboard.test.js** — 16 kasus uji regresi memakai Node bawaan.
-- **.github/workflows/validate.yml** — workflow pengujian pada push/PR ke kode/aset/tes.
+- **tests/regional-dashboard.test.js** — 19 kasus uji regresi memakai Node bawaan.
+- **tests/browser-smoke.mjs** — smoke test Playwright untuk dashboard desktop, mobile, navigasi drill-down, dan registrasi SIMRS contoh.
+- **.github/workflows/validate.yml** — workflow Node + Chromium/Playwright pada push/PR beserta screenshot QA sebagai artefak.
 - **README.md** — panduan Pengampu Wilayah dan registrar end-to-end.
 
 ## 3. Pembagian persona
@@ -63,7 +64,7 @@
 
 Skenario logika yang telah diperiksa dalam sesi pengembangan: pemisahan role, jejaring A/B, faskes belum melapor, klik wilayah, filter jenis/lokus, hitungan pasien vs tumor, basis tanggal, status final, tampilan HTML dashboard, dan regresi pengajuan QC/F12B/F13/F14 serta reset.
 
-Pengujian 16 kasus juga **tersedia di repository** sebagai kode Node, tetapi laporan ini tidak menyatakan CI hijau sebelum workflow benar-benar terkonfirmasi. Pemeriksaan layout pada Chromium desktop/mobile nyata juga masih perlu dilakukan.
+Sebanyak **19 skenario logika lulus pada pemeriksaan dengan shim V8** setelah perbaikan tanggal submit/finalisasi, hubungan lokus→faskes, dan pemakaian unit hitung pasien unik/tumor primer. Pengujian Node native dan browser Chromium/Playwright sudah disiapkan melalui GitHub Actions, termasuk pengambilan screenshot desktop/mobile. **Status workflow, artefak screenshot aktual, dan penilaian visual belum terkonfirmasi secara independen.**
 
 Tidak tersedia: backend, database, SSO/RBAC server, FHIR Adapter yang terhubung, data rumah sakit resmi, boundary geografi berlisensi, data pasien sesungguhnya, metode insidensi populasi/ASR, serta kanal pengiriman resmi IARC.
 
@@ -71,9 +72,15 @@ Tidak tersedia: backend, database, SSO/RBAC server, FHIR Adapter yang terhubung,
 
 ## 7. Tindak lanjut
 
-1. Verifikasi GitHub Actions dan penayangan hasil deploy Pages terbaru.
+1. Verifikasi workflow [GitHub Actions](https://github.com/bofandra/regnas/actions): `Verify REGNAS interactive mockup`, pengujian Node/Playwright, artefak screenshot `regnas-browser-qa-screenshots`, serta penayangan hasil deploy Pages terbaru.
 2. Jalankan seluruh 20 skenario UAT pada dokumen plan secara manual di Chrome desktop/mobile; khususnya keterbacaan diagram wilayah, scrolling tabel, aksesibilitas klik, dan filter silang.
 3. Jika peta presisi diperlukan, ganti diagram ilustratif dengan boundary administrasi berlisensi dan koordinat fasilitas dari sumber terverifikasi.
 4. Sebelum implementasi layanan nyata, sahkan mapping RS binaan, mandat pengampu/reviewer, terminologi, hak akses, definisi data mutu serta rencana integrasi backend SATUSEHAT.
 
 **Catatan:** dokumen plan tetap baseline kebutuhan; dokumen status ini mencatat fitur yang dibuat dan sisa keterbatasannya.
+
+## 8. Pembaruan pengujian lanjutan
+
+Perubahan lanjutan pada source: tanggal `submittedAt` dan `finalAt` kini diperbarui saat simulasi submit dan finalisasi; drill-down lokus hanya menampilkan faskes yang berkontribusi; faskes belum melapor tetap tersedia dalam daftar jejaring; pemilihan unit hitung mempengaruhi peta, progres, tren, tabel faskes dan CSV agregat.
+
+**Catatan validasi:** 19/19 uji callback lulus dalam runner V8 tersimulasikan. Hasil runner Node resmi di CI dan pemeriksaan screenshot desktop/mobile masih harus diverifikasi, sehingga tidak diklaim lulus pada dokumen ini.
