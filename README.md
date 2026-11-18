@@ -5,28 +5,31 @@ Mockup statis interaktif berbasis rancangan form **F01–F17**, termasuk **F12B 
 ## Akses
 
 - GitHub Pages: https://bofandra.github.io/regnas/
+- **Demo Pengampu Wilayah (langsung): https://bofandra.github.io/regnas/#pengampu**
 - Repository: https://github.com/bofandra/regnas
 - Workflow deployment: `.github/workflows/pages.yml`
 
 Setiap commit di `main` akan menjalankan workflow GitHub Pages.
 
-## Rencana penyesuaian berikutnya — Pengampu Wilayah
+## Implementasi dashboard Pengampu Wilayah (18 November 2026)
 
-Rencana lengkap untuk menambah dashboard jejaring pengampuan, peta sebaran kasus per wilayah/faskes binaan, agregat jenis kanker dan lokus dengan drill-down, monitoring faskes, matriks kewenangan, data sintetis, backlog P0–P2, dan 20 skenario UAT telah disimpan pada:
+**Fitur pengampu wilayah telah diimplementasikan sebagai demo interaktif dengan data sintetis** mengikuti [rencana penyesuaian](docs/PLAN_PENYESUAIAN_MOCKUP_PENGAMPU_WILAYAH_2026-11-18.md). Status pekerjaan, batasan, dan hasil pengujian tercatat pada **[Laporan Implementasi](docs/STATUS_IMPLEMENTASI_PENGAMPU_WILAYAH_2026-11-18.md)**.
 
-**[Plan Penyesuaian Mockup Pengampu Wilayah (18 November 2026)](docs/PLAN_PENYESUAIAN_MOCKUP_PENGAMPU_WILAYAH_2026-11-18.md)**
+**Cara membuka:** gunakan [tautan Pengampu Wilayah](https://bofandra.github.io/regnas/#pengampu), atau pilih **Pengampu Wilayah** dalam panel **⚙ Kontrol Demo**. Pilih jejaring contoh **Barat** atau **Timur** melalui kontrol presenter. **Pengampu Wilayah berbeda dari Reviewer Daerah**: pengampu memonitor faskes binaan dan agregat registri tetapi tidak mendapat tombol ACC/return.
 
-**Status:** dokumen rencana sudah tersedia; fitur peta dan dashboard Pengampu Wilayah **belum diimplementasikan** di mockup. Rencana ini menjaga peran "Pengampu Wilayah" (monitoring faskes binaan) tetap terpisah dari "Reviewer Daerah" (otorisasi keputusan kasus).
+**Isi demo baru:** peta/diagram sebaran provinsi-faskes (ilustratif, tidak menggunakan batas administratif presisi), klik wilayah → faskes → kasus; grafik jenis kanker → lokus → faskes → kasus; filter periode menurut tanggal diagnosis/submit/finalisasi; unit hitung tumor primer atau pasien unik; tabel faskes binaan termasuk belum melapor; status QC draf, progres review, distribusi stadium, tren bulanan, dan CSV **agregat**.
+
+**Dataset sintetis:** 54 tumor primer contoh dari 12 faskes sintetis di dua jejaring pengampu lintas provinsi, termasuk satu faskes tanpa submission. Seluruh data, hubungan jejaring, tanggal dan koordinat pada diagram hanya untuk demonstrasi; bukan statistik nasional atau daftar faskes pengampu resmi.
 
 ## Layar mockup
 
-- Ringkasan/dashboard: indikator dan grafik progres yang mengikuti perubahan status kasus sintetis.
+- Ringkasan/dashboard: indikator progres sesuai role; **Pengampu Wilayah** mendapatkan peta, grafik kanker/lokus dan monitoring jejaring.
 - Daftar Kasus: pencarian serta perpindahan antar-kasus tumor primer.
 - Simulasi Launch SIMRS (melalui panel presenter): tautan demo untuk membuka kasus terpilih, dengan detail referensi FHIR yang opsional.
 - Registrasi Kanker: identitas, episode, diagnosis, stadium/TNM, penunjang, terapi, tindak lanjut, dan pengajuan. Tahap pemeriksaan mengarah ke QC yang interaktif.
 - Pemeriksaan Kelengkapan: status perbaikan/konfirmasi dalam bahasa pengguna, dengan kode aturan yang bisa dibuka jika diperlukan.
 - Antrean Review: simulasi keputusan verifikator fasyankes, daerah, dan nasional.
-- Pelaporan: rekap kasus final sesuai cakupan peran dan ekspor CSV data sintetis.
+- Pelaporan: rekap kasus final sesuai cakupan peran dan ekspor CSV sintetis; dashboard jejaring menyediakan unduh CSV agregat faskes.
 - Integrasi & Audit: status sistem contoh dan aktivitas sesi; hanya tersedia melalui panel presenter.
 - Konfigurasi: master organisasi, role, routing, dan kebijakan verifikasi internal; hanya tersedia melalui panel presenter.
 
@@ -41,7 +44,19 @@ Klik **⚙ Kontrol Demo** di kanan atas untuk membuka panel presenter. Di panel 
 - **Reset Demo**, untuk mengembalikan kondisi awal seluruh data dan alur.
 Panel dapat ditutup kembali tanpa menghapus progres kasus. Saat tautan kasus dibuka dari SIMRS demo, aplikasi kembali ke tampilan registrar yang bersih.
 
-## Cara menguji — skenario demo end-to-end
+## Cara menguji — dashboard Pengampu Wilayah
+
+1. Buka **https://bofandra.github.io/regnas/#pengampu**. Lihat KPI jejaring dan penanda **DATA SIMULASI**.
+2. Klik provinsi pada **Peta Sebaran** → lihat faskes binaan → klik **Lihat kasus** untuk meninjau daftar kasus dan **Ringkasan** (tanpa identitas pasien).
+3. Klik salah satu batang **Kasus per Jenis Kanker** → pilih **Lokus/Topografi** → pilih faskes → lihat daftar kasus yang membentuk angka agregat.
+4. Gunakan filter **Dasar periode, Tahun, Wilayah, Faskes, Jenis Kanker, Lokus, Pelaporan Faskes, Status, Unit Hitung**. Coba **Belum melapor**: faskes tanpa kasus tetap terlihat.
+5. Bandingkan **Tumor primer** dan **Pasien unik**, serta filter **Tanggal diagnosis**, **Tanggal submit**, dan **Tanggal finalisasi**; unit dan basis hitung tercantum pada metadata layar.
+6. Gunakan panel **Faskes Binaan** untuk mengunduh **CSV agregat sintetis** tanpa data identitas pasien.
+7. Klik **⚙ Kontrol Demo** untuk beralih ke jejaring contoh lainnya, melihat peran **Registrar Fasyankes**, atau memilih **Reset Demo**.
+
+**Peta yang digunakan adalah diagram geografi ilustratif**; nama dan titik faskes adalah sintetis. Ini bukan geodata administratif resmi atau pemetaan kejadian kanker berdasarkan domisili pasien.
+
+## Cara menguji — skenario registrasi end-to-end
 
 1. Pada **Ringkasan**, amati rekap kasus dan grafik progres dinamis. Klik **⚙ Kontrol Demo** untuk mengganti peran ke **Registrar Fasyankes**.
 2. Dalam panel tersebut, klik **Simulasi Launch SIMRS**, pilih **REG-2026-00130**, lalu klik **Buat Tautan Kasus** dan **Buka Kasus**. Panel presenter tertutup otomatis; nomor kasus dan data klinis contoh sesuai pilihan.
@@ -65,6 +80,16 @@ Simulasi tidak berarti kriteria registrable case, multiple primary, coding ICD-O
 
 Dokumen desain bertahap tersimpan di [folder Google Drive REGNAS](https://drive.google.com/drive/folders/1BKgJUllvHViDdp3F5eQlPLfVjQ-KmaAO): indeks 00, detail tahap 01–06, F01/F12B (07), dan kamus data induk F01–F17 (08).
 
-## Teknologi
+## Teknologi dan pengujian
 
-Satu file statis HTML/CSS/JavaScript tanpa dependency eksternal. Compatible dengan GitHub Pages project site pada subpath `/regnas/`.
+Mockup tetap **statis tanpa dependency runtime eksternal** dan kompatibel dengan GitHub Pages pada subpath `/regnas/`.
+
+- `index.html` — portal, alur registrar, review, navigasi peran dan Kontrol Demo.
+- `assets/js/regional-dashboard.js` — seed jejaring/kasus sintetis, agregasi, filter, peta ilustratif, drill-down, ekspor agregat.
+- `assets/css/regional-dashboard.css` — styling dashboard responsif.
+- `tests/regional-dashboard.test.js` — 16 uji logika, scope, drill-down, CSV dan regresi registrar.
+- `.github/workflows/validate.yml` — menjalankan uji Node pada push/PR terkait.
+
+Pengujian lokal (Node.js 22): `node --test tests/regional-dashboard.test.js`.
+
+**Batasan:** validasi hasil render visual pada browser/proyektor dan deployment GitHub Pages harus tetap diperiksa sebelum digunakan dalam presentasi eksternal. GitHub Pages publik dan seluruh role switch di sini hanya simulasi, bukan otorisasi produksi.
