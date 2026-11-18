@@ -1,5 +1,7 @@
 # RENCANA PENYESUAIAN MOCKUP REGNAS — PENGAMPU WILAYAH & DRILL-DOWN REGISTRI KANKER
 
+> **Pembaruan pelaksanaan, 18 November 2026:** fitur utama P0 dan P1 serta sebagian analitik P2 telah diimplementasikan dalam mockup. Untuk rincian hasil, keterbatasan, dan pengujian lihat [Status Implementasi](STATUS_IMPLEMENTASI_PENGAMPU_WILAYAH_2026-11-18.md). Pernyataan “belum diimplementasikan” pada isi dokumen ini merupakan status pada saat rencana awal ditulis.
+
 **Versi:** 1.0 (rencana implementasi mockup)  
 **Tanggal:** 18 November 2026  
 **Repository:** https://github.com/bofandra/regnas  
