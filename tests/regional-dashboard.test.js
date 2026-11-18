@@ -222,6 +222,18 @@ test("T16 — submission/finalization dates follow demo workflow and filter",()=
   assert.equal(c.submittedAt,null);
   assert.equal(c.finalAt,null);
 });
+test("T17 — locus drilldown excludes non-contributing facilities, network roster keeps them",()=>{
+  const x=boot(),r=x.regional,records=sampleCases(x);
+  r.setFilter("group","Payudara");
+  r.setFilter("site","C50.9");
+  const page=r.content("regional-cancer",records,"wilayah","RS Contoh Sejahtera");
+  const drill=page.slice(page.indexOf('<div class="reg-drill">'));
+  assert.ok(drill.includes("RS Contoh Sejahtera"));
+  assert.ok(!drill.includes("RS Contoh Cendana"));
+  r.action("clear");
+  const facilities=r.content("regional-facilities",records,"wilayah","RS Contoh Sejahtera");
+  assert.ok(facilities.includes("RS Contoh Cendana"));
+});
 function sampleCases(x) {
   const ids=x.view.state().cards.map(c=>c.id);
   return x.regional.extendCases([
