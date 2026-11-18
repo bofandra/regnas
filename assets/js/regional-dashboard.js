@@ -12,7 +12,7 @@ var orgs=[
 {id:"ORG-009",name:"RS Contoh Harapan",province:"Jawa Timur",district:"Kota Malang",x:693,y:210,network:"NW-B"},
 {id:"ORG-010",name:"RS Contoh Cakrawala",province:"DKI Jakarta",district:"Jakarta Pusat",x:154,y:95,network:"NW-B"},
 {id:"ORG-011",name:"RS Contoh Anggrek",province:"Jawa Barat",district:"Kota Cirebon",x:340,y:149,network:"NW-B"},
-{id:"ORG-012",name:"RS Contoh Merapi",province:"Jawa Tengah",district:"Kabupaten Sleman (ilustrasi)",x:519,y:214,network:"NW-B"}
+{id:"ORG-012",name:"RS Contoh Merapi",province:"Jawa Tengah",district:"Kota Magelang",x:519,y:214,network:"NW-B"}
 ];
 var networks=[
 {id:"NW-A",name:"Jejaring Pengampu Barat (contoh)",description:"Enam faskes binaan lintas DKI, Jawa Barat, dan Jawa Tengah"},
@@ -25,7 +25,7 @@ var types=[
 {group:"Serviks",tumor:"Kanker serviks",icd:"C53.9",site:"C53.9",siteLabel:"Serviks uteri, tidak spesifik",morph:"8070/3"},
 {group:"Limfoma",tumor:"Limfoma",icd:"C85.9",site:"C77.9",siteLabel:"Kelenjar getah bening, tidak spesifik",morph:"9591/3"},
 {group:"Prostat",tumor:"Kanker prostat",icd:"C61",site:"C61.9",siteLabel:"Prostat (kode contoh)",morph:"8140/3"},
-{group:"Hati",tumor:"Kanker hati",icd:"C22.0",site:"C22.0",siteLabel:"Karsinoma hepatoseluler (contoh)",morph:"8170/3"}
+{group:"Hati",tumor:"Kanker hati",icd:"C22.0",site:"C22.0",siteLabel:"Hati, subsite C22.0 (contoh)",morph:"8170/3"}
 ];
 var provinces=["DKI Jakarta","Jawa Barat","Jawa Tengah","Jawa Timur"];
 function escapeHTML(x){return String(x==null?"":x).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
@@ -51,13 +51,18 @@ function extendCases(cards){
    var org=reportOrgs[(i*7+Math.floor(i/11))%reportOrgs.length];
    var type=types[(i*3+Math.floor(i/9))%types.length];
    var status=["DRAFT","RETURNED_TO_FASKES","INTERNAL_VERIFICATION_PENDING","REGIONAL_REVIEW","NATIONAL_REVIEW","FINAL_LOCKED","FINAL_LOCKED"][i%7];
-   var year=i%11===0?2025:2026,month=String((i%12)+1).padStart(2,"0"),day=String((i%26)+1).padStart(2,"0");
+   var year=i%11===0?2025:2026,month=String((i%8)+1).padStart(2,"0"),day=String((i%26)+1).padStart(2,"0");
    var patient=i===23?"P-000131":"P-"+String(2000+i).padStart(6,"0");
    var id="REG-"+year+"-"+String(1000+i).padStart(5,"0");
    cards.push({id:id,patient:patient,org:org.name,region:org.province,tumor:type.tumor,icd:type.icd,topo:type.site,morph:type.morph,stage:i%9===0?"UNKNOWN":["I","II","III","IV"][i%4],date:year+"-"+month+"-"+day,status:status,completeness:68+i%33,primary:"TUM-"+pad(i+6),episode:"EOC-DEMO-"+String(1000+i),timeline:["Kasus sintetis registri dibuat"]});
  }
+ cards.forEach(function(c){
+   if(!Object.prototype.hasOwnProperty.call(c,"submittedAt"))c.submittedAt=c.status==="DRAFT"?null:offsetDate(c.date,14);
+   if(!Object.prototype.hasOwnProperty.call(c,"finalAt"))c.finalAt=c.status==="FINAL_LOCKED"?offsetDate(c.date,45):null;
+ });
  return cards;
 }
+function offsetDate(date,days){var value=new Date(String(date)+"T00:00:00Z");return Number.isNaN(value.getTime())?null:new Date(value.getTime()+days*86400000).toISOString().slice(0,10)}
 var initialFilters={year:"2026",basis:"diagnosis",province:"",org:"",group:"",site:"",status:"",stage:"",unit:"tumor"};
 function freshFilters(){return JSON.parse(JSON.stringify(initialFilters))}
 var state={network:"NW-A",filters:freshFilters(),history:[],caseId:null};
@@ -65,7 +70,8 @@ function reset(){state.network="NW-A";state.filters=freshFilters();state.history
 function setNetwork(id){if(!getNetwork(id)||!networks.some(function(n){return n.id===id}))return;state.network=id;state.filters=freshFilters();state.history=[];state.caseId=null}
 function scopeOrganizations(role,selectedOrg){if(role==="wilayah")return orgs.filter(function(o){return o.network===state.network});if(role==="nasional")return orgs.slice();if(role==="daerah"){var o=getOrg(selectedOrg);return orgs.filter(function(r){return o&&r.province===o.province})}return orgs.filter(function(o){return o.name===selectedOrg})}
 function scopedCases(cards,role,selectedOrg){var names=new Set(scopeOrganizations(role,selectedOrg).map(function(o){return o.name}));return cards.filter(function(c){return names.has(c.org)})}
-function withinYear(c,f){if(!f.year)return true;var date=String(c.date||"");if(f.basis==="diagnosis")return date.slice(0,4)===f.year;var y=c.eventYear||date.slice(0,4);return y===f.year}
+function periodDate(c,basis){return basis==="submission"?c.submittedAt:basis==="finalization"?c.finalAt:c.date}
+function withinYear(c,f){var date=periodDate(c,f.basis);return !!date&&(!f.year||String(date).slice(0,4)===f.year)}
 function filterCases(cards,role,selectedOrg,except){var f=state.filters;return scopedCases(cards,role,selectedOrg).filter(function(c){
 var org=getOrg(c.org),t=cancer(c),ex=except||{};
 if(!withinYear(c,f))return false;
@@ -90,11 +96,11 @@ function currentOrgs(role,selectedOrg){var f=state.filters;return scopeOrganizat
 function filterBar(cards,role,selectedOrg){
  var os=scopeOrganizations(role,selectedOrg),prov=Array.from(new Set(os.map(function(o){return o.province}))),groups=Array.from(new Set(scopedCases(cards,role,selectedOrg).map(function(c){return cancer(c).group}))).sort();
  var sites=Array.from(new Map(scopedCases(cards,role,selectedOrg).filter(function(c){return !state.filters.group||cancer(c).group===state.filters.group}).map(function(c){return [cancer(c).site,{value:cancer(c).site,label:cancer(c).site+" · "+cancer(c).siteLabel}]})).values());
- return '<div class="reg-filter-panel"><div class="reg-filter-grid">'+select("year","Tahun diagnosis",["2026","2025","2024"],state.filters.year,"Semua tahun")+select("province","Lokasi faskes",prov,state.filters.province,"Semua wilayah")+select("org","Faskes binaan",os.filter(function(o){return !state.filters.province||o.province===state.filters.province}).map(function(o){return o.name}),state.filters.org,"Semua faskes")+select("group","Jenis kanker",groups,state.filters.group,"Semua jenis")+select("site","Lokus / topografi",sites,state.filters.site,"Semua lokus")+select("status","Status",["DRAFT","RETURNED_TO_FASKES","INTERNAL_VERIFICATION_PENDING","REGIONAL_REVIEW","NATIONAL_REVIEW","FINAL_LOCKED"].map(function(s){return {value:s,label:statusLabel(s)}}),state.filters.status,"Semua status")+select("unit","Unit hitung",[{value:"tumor",label:"Tumor primer"},{value:"patient",label:"Pasien unik"}],state.filters.unit,"Unit hitung")+'</div><div class="reg-filter-footer"><span>Data simulasi · basis tahun diagnosis · lokasi faskes pelapor, bukan domisili pasien</span>'+btn("Hapus Filter","clear","outline")+'</div></div>'
+ return '<div class="reg-filter-panel"><div class="reg-filter-grid">'+select("basis","Dasar periode",[{value:"diagnosis",label:"Tanggal diagnosis"},{value:"submission",label:"Tanggal submit"},{value:"finalization",label:"Tanggal finalisasi"}],state.filters.basis,"Pilih dasar")+select("year","Tahun periode",["2026","2025","2024"],state.filters.year,"Semua tahun")+select("province","Lokasi faskes",prov,state.filters.province,"Semua wilayah")+select("org","Faskes binaan",os.filter(function(o){return !state.filters.province||o.province===state.filters.province}).map(function(o){return o.name}),state.filters.org,"Semua faskes")+select("group","Jenis kanker",groups,state.filters.group,"Semua jenis")+select("site","Lokus / topografi",sites,state.filters.site,"Semua lokus")+select("status","Status",["DRAFT","RETURNED_TO_FASKES","INTERNAL_VERIFICATION_PENDING","REGIONAL_REVIEW","NATIONAL_REVIEW","FINAL_LOCKED"].map(function(s){return {value:s,label:statusLabel(s)}}),state.filters.status,"Semua status")+select("unit","Unit hitung",[{value:"tumor",label:"Tumor primer"},{value:"patient",label:"Pasien unik"}],state.filters.unit,"Unit hitung")+'</div><div class="reg-filter-footer"><span>Data simulasi · basis '+(state.filters.basis==="submission"?"tanggal submit":state.filters.basis==="finalization"?"tanggal finalisasi":"tanggal diagnosis")+' · lokasi faskes pelapor, bukan domisili pasien</span>'+btn("Hapus Filter","clear","outline")+'</div></div>'
 }
 function topKpis(cards,role,selectedOrg){
  var orgList=scopeOrganizations(role,selectedOrg),yearCases=filterCases(cards,role,selectedOrg,{province:true,org:true,group:true,site:true,status:true,stage:true}),filtered=filterCases(cards,role,selectedOrg);
- var rep=new Set(yearCases.filter(function(c){return c.status!=="DRAFT"}).map(function(c){return c.org}));
+ var rep=new Set(scopedCases(cards,role,selectedOrg).filter(function(c){return c.submittedAt&&(!state.filters.year||c.submittedAt.slice(0,4)===state.filters.year)}).map(function(c){return c.org}));
  var casesStatus=filtered.filter(function(c){return ["RETURNED_TO_FASKES","INTERNAL_RETURNED"].includes(c.status)});
  var out=[["Faskes binaan",orgList.length,"Dalam jejaring pengampu"],["Faskes melapor",orgList.filter(function(o){return rep.has(o.name)}).length,"Pernah submit (contoh)"],["Tumor primer",uniqueCount(filtered,"tumor"),"Sesuai filter"],["Pasien unik",uniqueCount(filtered,"patient"),"Tidak sama dengan tumor"],["Perlu koreksi",uniqueCount(casesStatus,"tumor"),"Status dikembalikan"],["Kasus final",uniqueCount(filtered.filter(function(c){return c.status==="FINAL_LOCKED"}),"tumor"),"Bukan angka insidensi PBCR"]];
  return '<div class="reg-kpis">'+out.map(function(x){return '<div class="reg-kpi"><span>'+escapeHTML(x[0])+'</span><strong>'+num(x[1])+'</strong><small>'+escapeHTML(x[2])+'</small></div>'}).join("")+'</div>';
@@ -115,7 +121,7 @@ function orgRows(cards,role,selectedOrg){
  var orgList=currentOrgs(role,selectedOrg),current=filterCases(cards,role,selectedOrg),allYear=filterCases(cards,role,selectedOrg,{province:true,org:true,group:true,site:true,status:true,stage:true});
  return orgList.map(function(o){
  var cases=current.filter(function(c){return c.org===o.name}),period=allYear.filter(function(c){return c.org===o.name});
- var reported=period.some(function(c){return c.status!=="DRAFT"}),final=cases.filter(function(c){return c.status==="FINAL_LOCKED"}),pending=cases.filter(function(c){return c.status!=="FINAL_LOCKED"}),returned=cases.filter(function(c){return ["RETURNED_TO_FASKES","INTERNAL_RETURNED"].includes(c.status)});
+ var reported=scopedCases(cards,role,selectedOrg).some(function(c){return c.org===o.name&&c.submittedAt&&(!state.filters.year||c.submittedAt.slice(0,4)===state.filters.year)}),final=cases.filter(function(c){return c.status==="FINAL_LOCKED"}),pending=cases.filter(function(c){return c.status!=="FINAL_LOCKED"}),returned=cases.filter(function(c){return ["RETURNED_TO_FASKES","INTERNAL_RETURNED"].includes(c.status)});
  return {org:o,cases:cases,total:count(cases),final:uniqueCount(final,"tumor"),pending:uniqueCount(pending,"tumor"),returned:uniqueCount(returned,"tumor"),reported:reported}
  })}
 function facilityPanel(cards,role,selectedOrg){
@@ -142,8 +148,8 @@ function caseDetail(cards,role,selectedOrg){
  return '<section class="reg-panel reg-detail"><div class="reg-panel-head"><div><h3>Ringkasan Kasus '+escapeHTML(c.id)+'</h3><p>Informasi terbatas untuk monitoring jejaring</p></div>'+btn("Tutup Ringkasan","closecase","outline")+'</div><div class="reg-detail-grid">'+[["Faskes",c.org],["Wilayah faskes",getOrg(c.org).province],["Jenis kanker",cancer(c).group],["Lokus/topografi",cancer(c).site],["Stadium tercatat",c.stage],["Tanggal diagnosis contoh",c.date],["Status",statusLabel(c.status)]].map(function(x){return '<div><span>'+escapeHTML(x[0])+'</span><strong>'+escapeHTML(x[1])+'</strong></div>'}).join("")+'</div><p class="reg-note">Tidak menampilkan NIK, identitas pasien atau catatan klinis rinci. Pengampu Wilayah tidak memiliki tombol ubah data maupun setujui kasus.</p></section>';
 }
 function trendsPanel(cards,role,selectedOrg){
- var year=state.filters.year||"2026",list=filterCases(cards,role,selectedOrg).filter(function(c){return c.date.slice(0,4)===year}),counts=Array.from({length:12},function(_,i){return uniqueCount(list.filter(function(c){return Number(c.date.slice(5,7))===i+1}),"tumor")}),max=Math.max(1,...counts);
- return '<section class="reg-panel"><div class="reg-panel-head"><div><h3>Tren Registrasi Menurut Tanggal Diagnosis</h3><p>'+escapeHTML(year)+' · jumlah tumor primer contoh per bulan, bukan laju insidensi</p></div></div><div class="reg-trend">'+counts.map(function(n,i){return '<div title="'+(i+1)+': '+n+' kasus"><span style="height:'+Math.max(4,Math.round(n/max*93))+'%"></span><small>'+String(i+1)+'</small></div>'}).join("")+'</div></section>';
+ var year=state.filters.year||"2026",basis=state.filters.basis,list=filterCases(cards,role,selectedOrg).filter(function(c){return periodDate(c,basis)&&periodDate(c,basis).slice(0,4)===year}),counts=Array.from({length:12},function(_,i){return uniqueCount(list.filter(function(c){return Number(periodDate(c,basis).slice(5,7))===i+1}),"tumor")}),max=Math.max(1,...counts);
+ return '<section class="reg-panel"><div class="reg-panel-head"><div><h3>Tren Registrasi</h3><p>'+escapeHTML(year)+' · '+escapeHTML(basis==="submission"?"tanggal submit":basis==="finalization"?"tanggal finalisasi":"tanggal diagnosis")+' · jumlah tumor primer per bulan</p></div></div><div class="reg-trend">'+counts.map(function(n,i){return '<div title="'+(i+1)+': '+n+' kasus"><span style="height:'+Math.max(4,Math.round(n/max*93))+'%"></span><small>'+String(i+1)+'</small></div>'}).join("")+'</div></section>';
 }
 function stagePanel(cards,role,selectedOrg){
  var ls=groupCounts(filterCases(cards,role,selectedOrg,{stage:true}),function(c){return c.stage==="UNKNOWN"?"Belum diketahui":c.stage});
@@ -156,7 +162,7 @@ function breadcrumbs(){
 }
 function drillPanel(cards,role,selectedOrg){
  var f=state.filters;
- return '<div class="reg-drill">'+breadcrumbs()+caseDetail(cards,role,selectedOrg)+(f.site||f.org||f.status||f.stage?caseRows(cards,role,selectedOrg):f.group?sitePanel(cards,role,selectedOrg):f.province?facilityPanel(cards,role,selectedOrg):'<p class="reg-note">Pilih wilayah pada peta, kelompok kanker pada grafik, atau faskes binaan untuk menampilkan rincian.</p>')+'</div>';
+ return '<div class="reg-drill">'+breadcrumbs()+caseDetail(cards,role,selectedOrg)+(f.org||f.status||f.stage?caseRows(cards,role,selectedOrg):f.site?facilityPanel(cards,role,selectedOrg):f.group?sitePanel(cards,role,selectedOrg):f.province?facilityPanel(cards,role,selectedOrg):'<p class="reg-note">Pilih wilayah pada peta, kelompok kanker pada grafik, atau faskes binaan untuk menampilkan rincian.</p>')+'</div>';
 }
 function header(role){
  return '<div class="reg-head"><div><div class="reg-eyebrow">'+escapeHTML(role==="wilayah"?"PENGAMPU WILAYAH":"ANALITIK NASIONAL")+' · REGNAS</div><h1>Dashboard Jejaring Pengampuan Kanker</h1><p>'+escapeHTML(role==="wilayah"?getNetwork(state.network).name:"Cakupan nasional (contoh)")+' · Data sintetis, tanpa pelaporan riil</p></div>'+badge("DATA SIMULASI")+'</div>'
@@ -170,7 +176,7 @@ function content(page,cards,role,selectedOrg){
  if(page==="cases")return top+caseRows(cards,role,selectedOrg)+caseDetail(cards,role,selectedOrg)+footnote();
  return top;
 }
-function footnote(){return '<p class="reg-footnote">METADATA · Jenis: monitoring registri berbasis faskes (HBCR, ilustrasi) · Basis: tanggal diagnosis · Unit: '+escapeHTML(state.filters.unit==="patient"?"pasien unik":"tumor primer")+' · As-of: 18 November 2026 (dataset demo) · Versi: DEMO-1 · Seluruh angka adalah simulasi, bukan estimasi insidensi populasi.</p>'}
+function footnote(){return '<p class="reg-footnote">METADATA · Jenis: monitoring registri berbasis faskes (HBCR, ilustrasi) · Basis: '+escapeHTML(state.filters.basis==="submission"?"tanggal submit":state.filters.basis==="finalization"?"tanggal finalisasi":"tanggal diagnosis")+' · Unit: '+escapeHTML(state.filters.unit==="patient"?"pasien unik":"tumor primer")+' · As-of: 18 November 2026 (dataset demo) · Versi: DEMO-1 · Seluruh angka adalah simulasi, bukan estimasi insidensi populasi.</p>'}
 function remember(){state.history.push({filters:JSON.parse(JSON.stringify(state.filters)),caseId:state.caseId});if(state.history.length>16)state.history.shift()}
 function action(a){if(a==="back"){var prev=state.history.pop();if(prev){state.filters=prev.filters;state.caseId=prev.caseId}return}
  if(a==="clear"){state.filters=freshFilters();state.history=[];state.caseId=null;return}
