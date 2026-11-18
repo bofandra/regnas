@@ -87,9 +87,10 @@ Mockup tetap **statis tanpa dependency runtime eksternal** dan kompatibel dengan
 - `index.html` — portal, alur registrar, review, navigasi peran dan Kontrol Demo.
 - `assets/js/regional-dashboard.js` — seed jejaring/kasus sintetis, agregasi, filter, peta ilustratif, drill-down, ekspor agregat.
 - `assets/css/regional-dashboard.css` — styling dashboard responsif.
-- `tests/regional-dashboard.test.js` — 16 uji logika, scope, drill-down, CSV dan regresi registrar.
-- `.github/workflows/validate.yml` — menjalankan uji Node pada push/PR terkait.
+- `tests/regional-dashboard.test.js` — **19 skenario** logika, scope, drill-down, periode, unit hitung, CSV, dan regresi registrar.
+- `tests/browser-smoke.mjs` — smoke test Chromium/Playwright untuk dashboard desktop, mobile, drill-down, dan akses registrar.
+- `.github/workflows/validate.yml` — menjalankan uji Node dan smoke test browser pada push/PR; screenshot QA diunggah sebagai artefak `regnas-browser-qa-screenshots`.
 
-Pengujian lokal (Node.js 22): `node --test tests/regional-dashboard.test.js`.
+Pengujian lokal (Node.js 22): `node --test tests/regional-dashboard.test.js`. Untuk menguji tampilan Chromium: instal Playwright (`npm install --no-save --no-package-lock playwright@1.56.1`, kemudian `npx playwright install chromium`) dan jalankan `node tests/browser-smoke.mjs` dari root repository.
 
-**Batasan:** validasi hasil render visual pada browser/proyektor dan deployment GitHub Pages harus tetap diperiksa sebelum digunakan dalam presentasi eksternal. GitHub Pages publik dan seluruh role switch di sini hanya simulasi, bukan otorisasi produksi.
+**Status validasi:** 19 skenario logika lulus pada pemeriksaan JavaScript dengan shim V8 saat pengembangan. Workflow Node + Playwright telah dikonfigurasi, tetapi hasil eksekusi GitHub Actions, screenshot yang dihasilkan, deployment GitHub Pages, dan penilaian visual manusia **belum terkonfirmasi** dalam percakapan ini. Periksa tab [Actions](https://github.com/bofandra/regnas/actions) dan artefak screenshot sebelum presentasi eksternal. GitHub Pages publik dan seluruh role switch di sini hanya simulasi, bukan otorisasi produksi.
