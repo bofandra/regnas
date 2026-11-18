@@ -234,6 +234,19 @@ test("T17 — locus drilldown excludes non-contributing facilities, network rost
   const facilities=r.content("regional-facilities",records,"wilayah","RS Contoh Sejahtera");
   assert.ok(facilities.includes("RS Contoh Cendana"));
 });
+test("T18 — selected unit labels propagate to map, monitoring, trends and CSV",()=>{
+  const x=boot(),r=x.regional,records=sampleCases(x);
+  r.setFilter("unit","patient");
+  const page=r.content("dashboard",records,"wilayah","RS Contoh Sejahtera");
+  assert.ok(page.includes("jumlah pasien unik per bulan"));
+  assert.ok(page.includes(" pasien</text>"));
+  assert.ok(page.includes("Pasien unik"));
+  const csv=r.aggregateCsv(records,"wilayah","RS Contoh Sejahtera");
+  assert.ok(csv.includes("jumlah_final_sesuai_unit"));
+  assert.ok(csv.includes('"patient"'));
+  r.setFilter("unit","tumor");
+  assert.ok(r.content("dashboard",records,"wilayah","RS Contoh Sejahtera").includes("jumlah tumor primer per bulan"));
+});
 function sampleCases(x) {
   const ids=x.view.state().cards.map(c=>c.id);
   return x.regional.extendCases([
