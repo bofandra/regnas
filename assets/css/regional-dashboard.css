@@ -1,0 +1,62 @@
+/* REGNAS — visualisasi jejaring pengampu (data sintetis) */
+.reg-head{display:flex;justify-content:space-between;gap:16px;align-items:center;border-radius:17px;padding:23px 25px;background:linear-gradient(115deg,#133653,#176671);color:white;margin-bottom:16px}
+.reg-head h1{margin:3px 0 4px;color:white;font-size:24px;line-height:1.24}
+.reg-head p{margin:0;color:#daedf0;font-size:12px}
+.reg-eyebrow{font-size:10px;font-weight:850;letter-spacing:1.4px;color:#9ef2e5}
+.reg-pill{display:inline-flex;padding:5px 10px;border-radius:99px;background:#e3f7f4;color:#116b68;font-size:11px;font-weight:750;white-space:nowrap}
+.reg-head .reg-pill{background:#f1faf9;color:#147a70}
+.reg-filter-panel,.reg-panel,.reg-drill{border:1px solid #e0e8ee;background:#fff;border-radius:15px;padding:18px;margin-bottom:15px;min-width:0;box-shadow:0 4px 16px #16385109}
+.reg-filter-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:11px}
+.reg-filter{display:block;min-width:0}.reg-filter span{display:block;font-size:11px;color:#56718b;font-weight:750;margin-bottom:4px}
+.reg-filter select{display:block;width:100%;border:1px solid #d5e2eb;border-radius:9px;background:#fff;padding:8px 9px;min-height:38px;color:#29455b}
+.reg-filter-footer{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:12px;font-size:11px;color:#657a89}
+.reg-btn{padding:7px 11px;font-size:11px;line-height:1.3;border:1px solid #cddde7;border-radius:8px;background:#087e7b;color:white;font-weight:700;cursor:pointer}
+.reg-btn.outline{background:#f8fbfd;color:#22506a}
+.reg-btn:hover{filter:brightness(.96)}.reg-btn:disabled{opacity:.45;cursor:default}
+.reg-kpis{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px;margin-bottom:15px}
+.reg-kpi{min-width:0;background:white;border:1px solid #e0e9ef;border-radius:14px;padding:15px;box-shadow:0 4px 14px #16385108}
+.reg-kpi span{display:block;font-size:11px;color:#6a8191;font-weight:700}
+.reg-kpi strong{display:block;margin:8px 0 3px;color:#163b54;font-size:29px;line-height:1;font-weight:830}
+.reg-kpi small{font-size:10px;color:#7d8e9a;line-height:1.3}
+.reg-layout{display:grid;grid-template-columns:minmax(0,1.24fr) minmax(0,1fr);gap:15px;align-items:start}
+.reg-panel-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px;flex-wrap:wrap}
+.reg-panel h3{margin:0 0 4px;color:#153b56;font-size:16px}
+.reg-panel-head p{margin:0;color:#748798;font-size:11px}
+.reg-note{color:#708699;font-size:11px;line-height:1.5;margin:11px 0 0}
+.reg-map-svg{display:block;width:100%;height:auto;min-height:195px;max-height:315px;overflow:visible;background:#f4f9fb;border:1px solid #e2edf1;border-radius:12px}
+.reg-map-label{font-size:15px;fill:#1a4e60;font-weight:800;pointer-events:none}
+.reg-map-count{font-size:13px;fill:#155265;font-weight:800;pointer-events:none}
+.reg-map-region,.reg-map-point{cursor:pointer;transition:opacity .16s}
+.reg-map-region:hover,.reg-map-point:hover{filter:brightness(.92)}
+.reg-map-region:focus,.reg-map-point:focus{outline:2px solid #0b8079}
+.reg-bars{display:grid;gap:7px}
+.reg-bar-row{display:grid;grid-template-columns:minmax(90px,1.2fr) minmax(90px,1.8fr) 34px;align-items:center;gap:10px;text-align:left;background:transparent;border:0;padding:6px 5px;border-radius:8px;cursor:pointer;width:100%;font-size:12px;color:#45647d}
+.reg-bar-row:hover{background:#eff9f7}.reg-bar-row strong{text-align:right;color:#1b5267}
+.reg-bar-track{background:#eaf0f4;height:10px;border-radius:10px;overflow:hidden}.reg-bar-value{height:100%;border-radius:10px;background:#159891}
+.reg-progress{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.reg-progress-item{border:1px solid #dce8ef;background:#f7fafc;border-radius:11px;min-width:0;padding:16px 12px;text-align:left;cursor:pointer}
+.reg-progress-item strong{display:block;font-size:25px;color:#126a76;margin-bottom:5px}.reg-progress-item span{display:block;font-size:11px;color:#597183}
+.reg-progress-item:hover{border-color:#62bcb5;background:#f0f9f7}
+.reg-table-wrap{width:100%;overflow-x:auto}
+.reg-table{width:100%;border-collapse:collapse;min-width:680px}
+.reg-table th{text-align:left;background:#f8fafc;color:#72869a;font-size:10px;padding:11px 9px}
+.reg-table td{border-top:1px solid #edf2f5;color:#4f6980;font-size:11px;padding:10px 9px;vertical-align:middle}
+.reg-table td strong{color:#234458}.reg-table td small{display:block;margin-top:4px;color:#8396a3}
+.reg-table tbody tr:hover{background:#fcfdfd}.reg-table .reg-btn{white-space:nowrap}
+.reg-drill{background:#f7fafc}.reg-drill .reg-panel{box-shadow:none}
+.reg-crumb{display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-size:11px;color:#678092;margin-bottom:15px}
+.reg-crumb strong{color:#173c55}.reg-crumb button{margin-left:auto}
+.reg-detail{border-color:#8dcac2}
+.reg-detail-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px}
+.reg-detail-grid>div{min-width:0;padding:10px;background:#f7fafb;border-radius:9px}
+.reg-detail-grid span{display:block;color:#728a9b;font-size:10px;margin-bottom:5px}
+.reg-detail-grid strong{display:block;color:#24475f;font-size:12px;overflow-wrap:anywhere}
+.reg-empty{padding:20px;text-align:center;font-size:12px;color:#8495a4}
+.reg-trend{display:grid;grid-template-columns:repeat(12,1fr);gap:8px;height:145px;align-items:end;padding:5px 0}
+.reg-trend>div{display:flex;flex-direction:column;align-items:center;justify-content:end;height:100%;gap:5px;min-height:0}
+.reg-trend>div span{display:block;width:85%;background:#168f89;border-radius:6px 6px 2px 2px}
+.reg-trend>div small{font-size:10px;color:#8395a3}
+.reg-footnote{font-size:10px;color:#798b98;padding:6px 0 16px}
+@media(max-width:1350px){.reg-kpis{grid-template-columns:repeat(3,minmax(0,1fr))}.reg-filter-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:1040px){.reg-layout{grid-template-columns:1fr}.reg-filter-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.reg-kpis{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:600px){.reg-head{align-items:flex-start}.reg-head h1{font-size:20px}.reg-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.reg-filter-grid{grid-template-columns:1fr}.reg-detail-grid{grid-template-columns:1fr}.reg-progress{grid-template-columns:repeat(2,minmax(0,1fr))}.reg-bar-row{grid-template-columns:minmax(80px,1fr) minmax(70px,1.2fr) 30px}}
