@@ -129,8 +129,9 @@ function orgRows(cards,role,selectedOrg){
  var qcPending=cases.filter(function(c){return ["DRAFT","RETURNED_TO_FASKES","INTERNAL_RETURNED"].includes(c.status)&&c.qcRunRevision!==c.revision});
  return {org:o,cases:cases,total:count(cases),final:uniqueCount(final,"tumor"),pending:uniqueCount(pending,"tumor"),returned:uniqueCount(returned,"tumor"),qcPending:uniqueCount(qcPending,"tumor"),reported:reported}
  })}
-function facilityPanel(cards,role,selectedOrg){
+function facilityPanel(cards,role,selectedOrg,contributorsOnly){
  var rows=orgRows(cards,role,selectedOrg),f=state.filters;
+ if(contributorsOnly)rows=rows.filter(function(r){return r.cases.length>0});
  return '<section class="reg-panel"><div class="reg-panel-head"><div><h3>Faskes Binaan</h3><p>Termasuk faskes yang belum memiliki submission pada tahun terpilih</p></div><div class="reg-panel-actions">'+badge(rows.length+" faskes")+btn("Unduh Agregat CSV","exportaggregate","outline")+'</div></div><div class="reg-table-wrap"><table class="reg-table"><thead><tr><th>Faskes</th><th>Wilayah</th><th>Kasus terpilih</th><th>Final</th><th>Perlu tindak lanjut</th><th>Perlu QC</th><th>Pelaporan</th><th></th></tr></thead><tbody>'+rows.map(function(r){return '<tr><td><strong>'+escapeHTML(r.org.name)+'</strong><small>'+escapeHTML(r.org.id)+'</small></td><td>'+escapeHTML(r.org.district)+', '+escapeHTML(r.org.province)+'</td><td>'+num(r.total)+'</td><td>'+num(r.final)+'</td><td>'+num(r.returned)+'</td><td>'+num(r.qcPending)+'</td><td>'+badge(r.reported?"Sudah melapor":"Belum melapor")+'</td><td>'+btn("Lihat kasus",toolAction("org",r.org.name),"outline")+'</td></tr>'}).join("")+'</tbody></table></div><p class="reg-note">"Belum melapor" = tidak ada submission registri pada periode contoh; tidak berarti tidak memiliki pasien kanker. "Perlu QC" adalah status draf/koreksi yang belum diperiksa ulang pada sesi ini, bukan indikator mutu resmi. Total kasus mengikuti filter aktif ('+escapeHTML(f.unit==="patient"?"pasien unik":"tumor primer")+').</p></section>';
 }
 function progressPanel(cards,role,selectedOrg){
@@ -167,7 +168,7 @@ function breadcrumbs(){
 }
 function drillPanel(cards,role,selectedOrg){
  var f=state.filters;
- return '<div class="reg-drill">'+breadcrumbs()+caseDetail(cards,role,selectedOrg)+(f.org||f.status||f.stage?caseRows(cards,role,selectedOrg):f.site?facilityPanel(cards,role,selectedOrg):f.group?sitePanel(cards,role,selectedOrg):f.province?facilityPanel(cards,role,selectedOrg):'<p class="reg-note">Pilih wilayah pada peta, kelompok kanker pada grafik, atau faskes binaan untuk menampilkan rincian.</p>')+'</div>';
+ return '<div class="reg-drill">'+breadcrumbs()+caseDetail(cards,role,selectedOrg)+(f.org||f.status||f.stage?caseRows(cards,role,selectedOrg):f.site?facilityPanel(cards,role,selectedOrg,true):f.group?sitePanel(cards,role,selectedOrg):f.province?facilityPanel(cards,role,selectedOrg):'<p class="reg-note">Pilih wilayah pada peta, kelompok kanker pada grafik, atau faskes binaan untuk menampilkan rincian.</p>')+'</div>';
 }
 function header(role){
  return '<div class="reg-head"><div><div class="reg-eyebrow">'+escapeHTML(role==="wilayah"?"PENGAMPU WILAYAH":"ANALITIK NASIONAL")+' · REGNAS</div><h1>Dashboard Jejaring Pengampuan Kanker</h1><p>'+escapeHTML(role==="wilayah"?getNetwork(state.network).name:"Cakupan nasional (contoh)")+' · Data sintetis, tanpa pelaporan riil</p></div>'+badge("DATA SIMULASI")+'</div>'
