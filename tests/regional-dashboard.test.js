@@ -9,7 +9,7 @@ const root = path.resolve(__dirname, "..");
 const html = fs.readFileSync(path.join(root, "index.html"), "utf8");
 const regionalJS = fs.readFileSync(path.join(root, "assets/js/regional-dashboard.js"), "utf8");
 
-function boot() {
+function boot(initialHash) {
   const nodes = new Map();
   const element = id => {
     if (!nodes.has(id)) nodes.set(id, {
@@ -24,7 +24,7 @@ function boot() {
     createElement(){return {click(){},href:"",download:""}}
   };
   const win = {
-    location:{hash:"",origin:"https://bofandra.github.io",pathname:"/regnas/",search:""},
+    location:{hash:initialHash||"",origin:"https://bofandra.github.io",pathname:"/regnas/",search:""},
     addEventListener(){}, confirm(){return true},
     prompt(){return "Alasan koreksi contoh"}
   };
@@ -148,7 +148,7 @@ test("T9 — monitoring aggregates and CSV contain no patient identifiers",()=>{
   assert.ok(x.view.state().view.includes("Unduh Agregat CSV"));
 });
 test("T10 — registrar baseline QC/F12B/regional/national workflow remains intact",()=>{
-  const x=boot();x.view.role("fasyankes");x.view.select("REG-2026-00130");
+  const x=boot();x.view.act("presenterlaunch");x.view.act("generate");x.view.act("openlaunch");assert.equal(x.view.state().id,"REG-2026-00130");
   x.view.act("submit");assert.equal(x.view.state().status,"DRAFT");
   x.view.edit(3,2,"T2");x.view.edit(3,1,"Edisi ditetapkan pengampu");
   x.view.act("runqc");x.view.act("submit");
@@ -176,6 +176,27 @@ test("T12 — mockup displays synthetic and schematic map disclosure",()=>{
   assert.ok(page.includes("Diagram ilustratif"));
   assert.ok(page.includes("bukan batas administrasi"));
   assert.ok(page.includes("bukan estimasi insidensi populasi"));
+});
+test("T13 — direct link opens regional supervisor home",()=>{
+  const x=boot("#pengampu");
+  assert.equal(x.view.state().role,"wilayah");
+  assert.equal(x.view.state().page,"dashboard");
+  assert.ok(x.view.state().view.includes("Peta Sebaran Kasus"));
+});
+test("T14 — region supervisor cannot edit or approve a case through the old action handler",()=>{
+  const x=boot("#pengampu");
+  x.view.act("open:REG-2026-00130");
+  assert.equal(x.view.state().role,"wilayah");
+  assert.equal(x.view.state().page,"dashboard");
+  x.view.act("approve");
+  assert.equal(x.view.state().cards.find(c=>c.id==="REG-2026-00130").status,"DRAFT");
+});
+test("T15 — stage bucket recognizes IIB as II and unknown separately",()=>{
+  const x=boot(),r=x.regional,records=sampleCases(x);
+  r.setFilter("stage","II");
+  assert.ok(r.filterCases(records,"nasional","").some(c=>c.stage==="IIB"));
+  r.setFilter("stage","UNKNOWN");
+  assert.ok(r.filterCases(records,"nasional","").every(c=>c.stage==="UNKNOWN"));
 });
 function sampleCases(x) {
   const ids=x.view.state().cards.map(c=>c.id);
