@@ -10,6 +10,14 @@ Mockup statis interaktif berbasis rancangan form **F01–F17**, termasuk **F12B 
 
 Setiap commit di `main` akan menjalankan workflow GitHub Pages.
 
+## Rencana penyesuaian berikutnya — Pengampu Wilayah
+
+Rencana lengkap untuk menambah dashboard jejaring pengampuan, peta sebaran kasus per wilayah/faskes binaan, agregat jenis kanker dan lokus dengan drill-down, monitoring faskes, matriks kewenangan, data sintetis, backlog P0–P2, dan 20 skenario UAT telah disimpan pada:
+
+**[Plan Penyesuaian Mockup Pengampu Wilayah (18 November 2026)](docs/PLAN_PENYESUAIAN_MOCKUP_PENGAMPU_WILAYAH_2026-11-18.md)**
+
+**Status:** dokumen rencana sudah tersedia; fitur peta dan dashboard Pengampu Wilayah **belum diimplementasikan** di mockup. Rencana ini menjaga peran "Pengampu Wilayah" (monitoring faskes binaan) tetap terpisah dari "Reviewer Daerah" (otorisasi keputusan kasus).
+
 ## Layar mockup
 
 - Ringkasan/dashboard: indikator dan grafik progres yang mengikuti perubahan status kasus sintetis.
