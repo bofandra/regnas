@@ -80,9 +80,10 @@ async function run() {
   errorsFrom(registrar,'registrar');
   await registrar.goto(base + '/',{waitUntil:'load'});
   await registrar.locator('#presenter-toggle').click();
-  await registrar.locator('#role').selectOption('fasyankes');
-  await registrar.locator('[data-page="cases"]').first().click();
-  await registrar.locator('[data-action="open:REG-2026-00130"]').first().click();
+  await registrar.locator('[data-action="presenterlaunch"]').click();
+  await registrar.locator('#launch-case').selectOption('REG-2026-00130');
+  await registrar.locator('[data-action="generate"]').click();
+  await registrar.locator('[data-action="openlaunch"]').click();
   await registrar.getByText('Stadium / TNM').first().waitFor();
   await registrar.screenshot({path:outDir + '/registrar-desktop.png',fullPage:true});
 
