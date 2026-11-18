@@ -13,6 +13,8 @@ on:
       - 'index.html'
       - 'assets/**'
       - 'tests/**'
+      - '.github/workflows/validate.yml'
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -27,5 +29,19 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Run regression tests without external packages
+      - name: Run REGNAS Node regression tests
         run: node --test tests/regional-dashboard.test.js
+      - name: Install browser runner (CI only)
+        run: |
+          npm install --no-save --no-package-lock playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Smoke-test desktop and mobile views
+        run: node tests/browser-smoke.mjs
+      - name: Upload QA screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: regnas-browser-qa-screenshots
+          path: artifacts/browser-qa/
+          if-no-files-found: warn
+          retention-days: 14
